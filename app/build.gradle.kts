@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "fun.example.cactusgemma"
+    namespace = "com.example.cactusgemma"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "fun.example.cactusgemma"
+        applicationId = "com.example.cactusgemma"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -41,5 +41,6 @@ android {
 
 dependencies {
     implementation("com.cactuscompute:cactus:1.4.1-beta")
+    implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }
