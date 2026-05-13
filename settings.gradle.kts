@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CactusGemmaChat"
+rootProject.name = "LiteRTLMGemmaChat"
 include(":app")

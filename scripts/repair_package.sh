@@ -1,30 +1,45 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OLD_DIR="app/src/main/java/fun/example/cactusgemma"
-NEW_DIR="app/src/main/java/com/example/cactusgemma"
-OLD_FILE="$OLD_DIR/MainActivity.kt"
+# Migrate from old package names to com.example.litertlmchat
+
+NEW_DIR="app/src/main/java/com/example/litertlmchat"
 NEW_FILE="$NEW_DIR/MainActivity.kt"
+
+# Remove old cactusgemma package if present
+OLD_CACTUS="app/src/main/java/com/example/cactusgemma"
+OLD_FUN="app/src/main/java/fun/example/cactusgemma"
 
 mkdir -p "$NEW_DIR"
 
-if [ -f "$OLD_FILE" ]; then
-  if [ ! -f "$NEW_FILE" ]; then
-    cp "$OLD_FILE" "$NEW_FILE"
+# Copy from old locations if new file doesn't exist
+if [ ! -f "$NEW_FILE" ]; then
+  if [ -f "$OLD_CACTUS/MainActivity.kt" ]; then
+    cp "$OLD_CACTUS/MainActivity.kt" "$NEW_FILE"
+  elif [ -f "$OLD_FUN/MainActivity.kt" ]; then
+    cp "$OLD_FUN/MainActivity.kt" "$NEW_FILE"
   fi
-  sed -i 's/^package fun\.example\.cactusgemma/package com.example.cactusgemma/' "$NEW_FILE"
-  rm -rf app/src/main/java/fun
 fi
 
+# Fix package declaration
 if [ -f "$NEW_FILE" ]; then
-  sed -i 's/^package fun\.example\.cactusgemma/package com.example.cactusgemma/' "$NEW_FILE"
+  sed -i 's/^package fun\.example\.cactusgemma/package com.example.litertlmchat/' "$NEW_FILE"
+  sed -i 's/^package com\.example\.cactusgemma/package com.example.litertlmchat/' "$NEW_FILE"
 fi
 
-sed -i 's/namespace = "fun\.example\.cactusgemma"/namespace = "com.example.cactusgemma"/' app/build.gradle.kts
-sed -i 's/applicationId = "fun\.example\.cactusgemma"/applicationId = "com.example.cactusgemma"/' app/build.gradle.kts
+# Clean up old directories
+rm -rf app/src/main/java/fun
+rm -rf "$OLD_CACTUS"
 
-if grep -R "^package fun\.example\.cactusgemma" -n app/src/main/java >/tmp/cactus_bad_package.txt 2>/dev/null; then
-  cat /tmp/cactus_bad_package.txt
+# Fix build.gradle.kts namespace and applicationId
+sed -i 's/namespace = "fun\.example\.cactusgemma"/namespace = "com.example.litertlmchat"/' app/build.gradle.kts
+sed -i 's/namespace = "com\.example\.cactusgemma"/namespace = "com.example.litertlmchat"/' app/build.gradle.kts
+sed -i 's/applicationId = "fun\.example\.cactusgemma"/applicationId = "com.example.litertlmchat"/' app/build.gradle.kts
+sed -i 's/applicationId = "com\.example\.cactusgemma"/applicationId = "com.example.litertlmchat"/' app/build.gradle.kts
+
+# Verify no bad packages remain
+if grep -R "^package fun\.example\." -n app/src/main/java >/tmp/litert_bad_package.txt 2>/dev/null; then
+  cat /tmp/litert_bad_package.txt
   echo "Found invalid Kotlin package still present" >&2
   exit 1
 fi

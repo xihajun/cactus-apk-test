@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cactusgemma"
+    namespace = "com.example.litertlmchat"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.cactusgemma"
-        minSdk = 24
+        applicationId = "com.example.litertlmchat"
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
@@ -40,7 +40,8 @@ android {
 }
 
 dependencies {
-    implementation("com.cactuscompute:cactus:1.4.1-beta")
+    // LiteRT-LM — the current (non-deprecated) Google on-device LLM inference SDK
+    implementation("com.google.ai.edge.litertlm:litertlm-android:latest.release")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

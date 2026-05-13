@@ -1,41 +1,66 @@
-# Cactus Gemma Chat Android Demo
+# LiteRT-LM Gemma 4 Chat — Android Demo
 
-A minimal Android app that uses Cactus Kotlin SDK to download and run `google/gemma-4-E2B-it` locally on an Android phone.
+A minimal Android app that uses **Google AI Edge LiteRT-LM** to run Gemma 4
+locally on an Android phone with GPU acceleration.
 
 ## What it does
 
 - Builds a small Android APK.
-- On first launch, the app downloads the Cactus-Compute pre-converted Gemma 4 E2B INT4 weights.
-- After download and initialization, chat generation runs locally on device.
+- Runs a `.litertlm` model file on-device via the LiteRT-LM Kotlin SDK.
+- Supports GPU acceleration (via OpenCL) for fast inference.
+- Streaming token generation with chat history.
 
 ## Requirements
 
 - Android phone with arm64-v8a CPU.
-- Android 7.0 / API 24 or newer.
-- Wi-Fi and several GB of free storage for the first model download.
-- For Gemma 4 E2B, a recent flagship or upper-midrange Android device is recommended.
+- Android 8.0 / API 26 or newer.
+- A `.litertlm` model file (e.g., from
+  [`xihajun/gemma4-e4b-mixed-en-lora-r16-v6e-1536-litert-lm`](https://huggingface.co/xihajun/gemma4-e4b-mixed-en-lora-r16-v6e-1536-litert-lm)
+  or the
+  [LiteRT community models](https://huggingface.co/litert-community)).
 
 ## Build in GitHub Actions
 
 1. Create a new GitHub repo.
 2. Upload this project.
-3. Open the repo's Actions tab.
+3. Open the repo's **Actions** tab.
 4. Run **Build Debug APK**.
-5. Download the `cactus-gemma-chat-debug-apk` artifact.
+5. Download the `litertlm-gemma-chat-debug-apk` artifact.
 6. Install `app-debug.apk` on your phone.
+7. Push a `.litertlm` model file to the device:
+   ```bash
+   adb push model.litertlm /data/data/com.example.litertlmchat/files/model.litertlm
+   ```
 
-## Change model
+## Model setup
+
+The app looks for the model file at:
+
+```
+/data/data/com.example.litertlmchat/files/model.litertlm
+```
+
+You can:
+- `adb push` the file directly.
+- Download from HuggingFace using the app's download button (requires HF token).
+- Place it in external storage at `<app-external-files>/model.litertlm`.
+
+## Change backend
 
 In `MainActivity.kt`, change:
 
 ```kotlin
-private val modelName = "google/gemma-4-E2B-it"
+backend = Backend.GPU()     // GPU via OpenCL (fastest)
+backend = Backend.CPU()     // CPU fallback
+backend = Backend.NPU(nativeLibraryDir = applicationInfo.nativeLibraryDir)  // NPU
 ```
 
-For a tiny smoke test, you can try:
+## Key difference from the old Cactus version
 
-```kotlin
-private val modelName = "google/gemma-3-270m-it"
-```
-
-The app uses the canonical model names from Cactus `models.json`; Cactus maps them to pre-converted weights under Hugging Face `Cactus-Compute`.
+| | Old (Cactus SDK) | New (LiteRT-LM) |
+|---|---|---|
+| SDK | `com.cactuscompute:cactus` | `com.google.ai.edge.litertlm:litertlm-android` |
+| Format | GGUF | `.litertlm` |
+| Backend | CPU only (llama.cpp) | GPU / NPU / CPU |
+| Status | Community SDK | Google official, production-grade |
+| Models | E2B INT4 | E4B dynamic_wi8_afp32 |

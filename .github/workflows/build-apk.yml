@@ -37,5 +37,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: cactus-gemma-chat-debug-apk
+          name: litertlm-gemma-chat-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
