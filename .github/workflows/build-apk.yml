@@ -28,6 +28,9 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
+      - name: Repair stale package name
+        run: bash scripts/repair_package.sh
+
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
