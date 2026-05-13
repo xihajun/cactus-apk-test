@@ -256,7 +256,7 @@ class MainActivity : ComponentActivity() {
 
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideKeyboardFromWindow(inputView.windowToken, 0)
+        imm.hideSoftInputFromWindow(inputView.windowToken, 0)
     }
 
     override fun onDestroy() {
